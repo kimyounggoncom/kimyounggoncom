@@ -1,11 +1,11 @@
 from com.kimyounggon.models.titanic.dataset import Dataset
-from com.kimyounggon.models.titanic.service import Service
+from com.kimyounggon.models.titanic.titanic_service import TitanicService
 
-class Controller:
+class TitanicController:
 
 
     dataset = Dataset()
-    service = Service()
+    service = TitanicService()
     
     def modeling(self, train, test):
         this = self.dataset 

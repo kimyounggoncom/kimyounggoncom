@@ -6,7 +6,7 @@ class Dataset:
     context: str
     fname: str
     label: str
-    id: str
+    
 
 
     @property
