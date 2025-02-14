@@ -1,5 +1,4 @@
 from dataclasses import dataclass 
-import pandas as pd  # pd = pandas()
 
 @dataclass  
 class Dataset:
