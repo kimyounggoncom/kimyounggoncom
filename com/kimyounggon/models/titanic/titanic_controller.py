@@ -7,10 +7,10 @@ class TitanicController:
     dataset = Dataset()
     service = TitanicService()
     
-    def modeling(self, train, test): #machine learning 
+    def modeling(self, train, test): 
         this = self.service.preprocess(train, test)
         self.print_this(this)
-        
+
    
         
         #this.train = self.service.create_train(this)
