@@ -1,5 +1,7 @@
 from com.kimyounggon.models.titanic.dataset import Dataset
 import pandas as pd
+import numpy as np
+
 
 """
 PassengerId  고객ID,
@@ -22,7 +24,7 @@ print(f'SVM 활용한 검증 정확도 {None}')
 # """
 class TitanicService:
 
-    dataset = Dataset()
+    dataset = Dataset() #클래스 변수
 
 
     def new_model(self, fname) -> object:
@@ -62,7 +64,7 @@ class TitanicService:
     @staticmethod
     def extract_title_from_name(this):
 
-        [i.__setitem__('Title', i['Name'].str.extract('([A-Za-z]+)\.', expand=False))
+        [i.__setitem__('Title', i['Name'].str.extract(r'([A-Za-z]+)\.', expand=False))
                        for i in [this.train, this.test]]
 
         # [i['Title'] = i['Name'].str.extract('([A-Za-z]+)\.', expand=False) for i in [this.train, this.test]]
@@ -109,7 +111,7 @@ class TitanicService:
             i['Title'] = i['Title'].replace(['Miss'], 'Ms')
             # Master 는 변화없음
             # Mrs 는 변화없음
-            i['Title'] = i['Title'].fillna(0)
+            i['Title'] = i['Title'].fillna(0) #평민
             i['Title'] = i['Title'].map(title_mapping)
             
         return this
@@ -119,9 +121,12 @@ class TitanicService:
         return this
     
     @staticmethod
-    def gender_nominal(this): 
+    def gender_nominal(this):
+        gender_mapping = {"male":1, "female":2}
+        [i.__setitem__("Gender", i["Sex"].map(gender_mapping)) 
+         for i in [this.train, this.test]]
         return this
-    
+
     @staticmethod
     def create_labels(this) -> object:
         return this.train['Survived']
@@ -132,7 +137,7 @@ class TitanicService:
     
     @staticmethod
     def drop_feature(this, *feature ) -> object:
-        [i.drop(j, axis=1, inplace=True)for j in feature for i in [this.train, this.test]]  
+        [i.drop(j, axis=1, inplace=True) for j in feature for i in [this.train, this.test]]  
         return this
              
     @staticmethod
@@ -144,21 +149,48 @@ class TitanicService:
     @staticmethod
     def kwargs_sample(**kwargs) -> None:
         {print("".join(f'키워드: {key} 값: {value}')) for key, value in kwargs.items()}
-        
-        # for key, value in kwargs.items():
-        #     print(f'키워드 arg: {key} 값: {value}')
-            
 
+    
+
+        #  for key, value in kwargs.items():
+        #      print(f'키워드 arg: {key} 값: {value}')
+            
     @staticmethod
     def pclass_ordinal(this): 
         return this
 
     @staticmethod
     def gender_ordinal(this):
+
         return this
 
     @staticmethod
     def age_ratio(this):
+        
+        # for i in [this.train, this.test]:
+        #     missing_age_count = i["Age"].isnull().sum()  
+        #     print("😒😒😒Age빈값의 개수",missing_age_count)
+        TitanicService
+        for i in [this.train, this.test]:
+            i["Age"] = i["Age"].fillna(-0.5)
+        train_max_age = max(this.train["Age"])
+        test_max_age = max(this.test["Age"])
+        max_age = max(train_max_age, test_max_age)
+        print("🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️ ", max_age)
+
+
+        # for i in [this.train, this.test]:
+        #     missing_age_count = i["Age"].isnull().sum() 
+        # print("😘😘😘😘😘fillna이후 Age빈값의 개수", missing_age_count)
+        age_mapping = {'Unknown':0 , 'Baby': 1, 'Child': 2, 'Teenager' : 3, 'Student': 4,
+                       'Young Adult': 5, 'Adult':6, 'Senior': 7}
+         
+        bins= [-1, 0, 1, 12, 18, 24, 35, 60, np.inf]
+        labels=['Unknown','Baby','Child','Teenager','Student','Young Adult','Adult', 'Senior']
+        for i in [this.train, this.test]:
+            i['AgeGroup'] = pd.cut(i['Age'], bins, labels= labels).map(age_mapping)
+            
+        
         return this
 
     @staticmethod
@@ -169,8 +201,9 @@ class TitanicService:
     def embarked_nominal(this):
         this.train = this.train.fillna({"Embarked":'S'}) # 사우스햄튼이 가장 많으니까
         this.test = this.test.fillna({"Embarked":'S'})
-        this.train['Embarked'] = this.train['Embarked'].map({'S':1, 'C':2, 'Q':3})
-        this.test['Embarked'] = this.test['Embarked'].map({'S':1, 'C':2, 'Q':3})
+        embarked_mapping = {'S':1, 'C':2, 'Q':3}
+        this.train['Embarked'] = this.train['Embarked'].map(embarked_mapping)
+        this.test['Embarked'] = this.test['Embarked'].map(embarked_mapping)
 
         return this 
         
